@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LNCT Bhopal Campus Map</title>
+
+    <!-- Leaflet CSS -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+    * { box-sizing: border-box; }
+
+    /* Page is a column: header on top, map fills the rest */
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    header {
+        background: #1e3a8a;
+        color: white;
+        padding: 12px 16px;
+    }
+
+    header h1 { margin: 0 0 10px; font-size: 22px; }
+
+    .search-row { display: flex; gap: 8px; }
+
+    #searchInput {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+    }
+
+    #searchBtn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 6px;
+        background: #ea580c;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .chips { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .chip {
+        padding: 6px 14px;
+        border: 1px solid white;
+        border-radius: 20px;
+        background: transparent;
+        color: white;
+        cursor: pointer;
+    }
+
+    .chip.active { background: white; color: #1e3a8a; }
+
+    #message { margin-top: 8px; font-size: 14px; color: #fde68a; min-height: 18px; }
+
+    #map { flex: 1; width: 100%; }
+
+    .custom-marker { background: transparent; border: none; }
+</style>
+</head>
+
+<body>
+    <header>
+        <h1>LNCT Bhopal Campus Map</h1>
+
+        <div class="search-row">
+            <input id="searchInput" type="text" placeholder="Search canteen, science building...">
+            <button id="searchBtn">Search</button>
+        </div>
+
+        <div class="chips">
+            <button class="chip active" data-type="all">All</button>
+            <button class="chip" data-type="building">Buildings</button>
+            <button class="chip" data-type="lab">Labs</button>
+            <button class="chip" data-type="facility">Facilities</button>
+            <button class="chip" data-type="entrance">Entrance</button>
+        </div>
+
+        <div id="message"></div>
+    </header>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="map.js"></script>
+</body>
+</html>
