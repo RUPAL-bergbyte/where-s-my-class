@@ -1,0 +1,25 @@
+[
+  { "id": "main-entrance", "name": "Main Entrance", "lat": 23.251615, "lng": 77.523494,
+    "type": "entrance", "description": "Main gate into LNCT campus",
+    "keywords": "gate entrance main", "photo": "", "floor": "" },
+
+  { "id": "new-science", "name": "New Science Building", "lat": 23.249670, "lng": 77.527634,
+    "type": "building", "description": "New Science Building, LNCT campus",
+    "keywords": "science building academic block department classroom", "photo": "", "floor": "" },
+
+  { "id": "old-science", "name": "Old Science Building", "lat": 23.249152, "lng": 77.527682,
+    "type": "building", "description": "Old Science Building, LNCT campus",
+    "keywords": "science building academic block department classroom", "photo": "", "floor": "" },
+
+  { "id": "science-workshop", "name": "Science Workshop", "lat": 23.248610, "lng": 77.527868,
+    "type": "lab", "description": "Science workshop area",
+    "keywords": "workshop lab laboratory", "photo": "", "floor": "" },
+
+  { "id": "canteen", "name": "Canteen", "lat": 23.250359, "lng": 77.526792,
+    "type": "facility", "description": "Campus canteen",
+    "keywords": "canteen cafeteria food", "photo": "", "floor": "" },
+
+  { "id": "science-ground", "name": "Science Ground", "lat": 23.249781, "lng": 77.526253,
+    "type": "facility", "description": "Ground near the Science Building",
+    "keywords": "ground playground", "photo": "", "floor": "" }
+]

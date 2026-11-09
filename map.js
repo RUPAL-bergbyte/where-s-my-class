@@ -1,24 +1,10 @@
 // ---------- 1. CAMPUS DATA ----------
-// "keywords" is what the search box matches against
-const locations = [
-  { name: "Main Entrance", lat: 23.251615, lng: 77.523494, type: "entrance",
-    description: "Main gate into LNCT campus", keywords: "gate entrance main" },
-  { name: "New Science Building", lat: 23.249670, lng: 77.527634, type: "building",
-    description: "New Science Building, LNCT campus",
-    keywords: "science building academic block department classroom" },
-  { name: "Old Science Building", lat: 23.249152, lng: 77.527682, type: "building",
-    description: "Old Science Building, LNCT campus",
-    keywords: "science building academic block department classroom" },
-  { name: "Science Workshop", lat: 23.248610, lng: 77.527868, type: "lab",
-    description: "Science workshop area", keywords: "workshop lab laboratory" },
-  { name: "Canteen", lat: 23.250359, lng: 77.526792, type: "facility",
-    description: "Campus canteen", keywords: "canteen cafeteria food" },
-  { name: "Science Ground", lat: 23.249781, lng: 77.526253, type: "facility",
-    description: "Ground near the Science Building", keywords: "ground playground" }
-];
+// The data now lives in data/locations.json and is loaded in section 3.
+let locations = [];
+const markers = [];   // markers[i] belongs to locations[i]
 
 // ---------- 2. MAP SETUP ----------
-const map = L.map("map");
+const map = L.map("map").setView([23.2499, 77.5265], 17);   // starting view until data loads
 
 const streetMap = L.tileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap contributors", maxZoom: 19
@@ -41,21 +27,31 @@ function getIcon(type) {
   });
 }
 
-// ---------- 3. MARKERS ----------
-const markers = [];   // markers[i] belongs to locations[i]
+// ---------- 3. LOAD DATA, THEN ADD MARKERS ----------
+function addMarkers() {
+  locations.forEach(function (place, i) {
+    const marker = L.marker([place.lat, place.lng], { icon: getIcon(place.type) }).addTo(map);
+    marker.bindPopup(`
+      <b>${place.name}</b><br>
+      ${place.description}<br>
+      <button class="route-btn" onclick="showRoute(${i})">Get walking route</button>
+    `);
+    markers.push(marker);
+  });
 
-locations.forEach(function (place, i) {
-  const marker = L.marker([place.lat, place.lng], { icon: getIcon(place.type) }).addTo(map);
-  marker.bindPopup(`
-    <b>${place.name}</b><br>
-    ${place.description}<br>
-    <button class="route-btn" onclick="showRoute(${i})">Get walking route</button>
-  `);
-  markers.push(marker);
-});
+  map.fitBounds(L.latLngBounds(locations.map(p => [p.lat, p.lng])),
+                { padding: [30, 30], maxZoom: 18 });
+}
 
-map.fitBounds(L.latLngBounds(locations.map(p => [p.lat, p.lng])),
-              { padding: [30, 30], maxZoom: 18 });
+fetch("data/locations.json")
+  .then(response => response.json())
+  .then(function (data) {
+    locations = data;
+    addMarkers();
+  })
+  .catch(function () {
+    alert("Could not load campus data. Open the site with Live Server, not by double-clicking the file.");
+  });
 
 // ---------- 4. ROUTING ----------
 let routeControl = null;
@@ -139,6 +135,11 @@ function searchCampus() {
   if (input === "") {
     message.textContent = "Please enter a campus location to search.";
     cards.forEach(c => c.hidden = false);
+    return;
+  }
+
+  if (locations.length === 0) {
+    message.textContent = "Campus data is still loading. Try again in a moment.";
     return;
   }
 
