@@ -1,11 +1,19 @@
-// ---------- 1. CAMPUS DATA ----------
-// The data now lives in data/locations.json and is loaded in section 3.
+// ---------- 1. SHARED DATA ----------
 let locations = [];
-const markers = [];   // markers[i] belongs to locations[i]
+const markers = [];        // markers[i] belongs to locations[i]
+let activeType = "all";
+
+const typeColors = { entrance: "#b6f03c", building: "#2f6bff", lab: "#a855f7",
+                     tree: "#22c55e", facility: "#fb923c" };
+const typeNames = { entrance: "Entrance", building: "Building", lab: "Lab",
+                    tree: "Green zone", facility: "Facility" };
 
 // ---------- 2. MAP SETUP ----------
-const map = L.map("map").setView([23.2499, 77.5265], 17);   // starting view until data loads
+const map = L.map("map").setView([23.2499, 77.5265], 17);
 
+const darkMap = L.tileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
+  attribution: "&copy; OpenStreetMap contributors", maxZoom: 19, className: "dark-tiles"
+});
 const streetMap = L.tileLayer("https://tile.openstreetmap.de/{z}/{x}/{y}.png", {
   attribution: "&copy; OpenStreetMap contributors", maxZoom: 19
 });
@@ -13,21 +21,20 @@ const satelliteMap = L.tileLayer(
   "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
   { attribution: "Tiles &copy; Esri", maxZoom: 19 }
 );
-streetMap.addTo(map);
-L.control.layers({ "Street Map": streetMap, "Satellite View": satelliteMap }).addTo(map);
+darkMap.addTo(map);
+L.control.layers({ "Dark Map": darkMap, "Street Map": streetMap, "Satellite View": satelliteMap }).addTo(map);
 
 function getIcon(type) {
-  const colors = { entrance: "#16a34a", building: "#2563eb", lab: "#9333ea",
-                   tree: "#15803d", facility: "#ea580c" };
+  const color = typeColors[type] || "#2f6bff";
   return L.divIcon({
     className: "custom-marker",
-    html: `<div style="background:${colors[type] || "#2563eb"};width:18px;height:18px;
-           border:3px solid white;border-radius:50%;box-shadow:0 1px 6px #555;"></div>`,
+    html: `<div style="background:${color};width:18px;height:18px;border:3px solid white;
+           border-radius:50%;box-shadow:0 0 12px ${color};"></div>`,
     iconSize: [24, 24], iconAnchor: [12, 12]
   });
 }
 
-// ---------- 3. LOAD DATA, THEN ADD MARKERS ----------
+// ---------- 3. LOAD DATA, THEN BUILD MARKERS ----------
 function addMarkers() {
   locations.forEach(function (place, i) {
     const marker = L.marker([place.lat, place.lng], { icon: getIcon(place.type) }).addTo(map);
@@ -39,8 +46,12 @@ function addMarkers() {
     markers.push(marker);
   });
 
-  map.fitBounds(L.latLngBounds(locations.map(p => [p.lat, p.lng])),
-                { padding: [30, 30], maxZoom: 18 });
+  document.getElementById("statPlaces").textContent = locations.length;
+  document.querySelectorAll("[data-count]").forEach(function (el) {
+    el.textContent = locations.filter(p => p.type === el.dataset.count).length;
+  });
+
+  applyFilters(true);
 }
 
 fetch("data/locations.json")
@@ -50,7 +61,8 @@ fetch("data/locations.json")
     addMarkers();
   })
   .catch(function () {
-    alert("Could not load campus data. Open the site with Live Server, not by double-clicking the file.");
+    document.getElementById("searchMessage").textContent =
+      "Could not load campus data. Open the site with Live Server.";
   });
 
 // ---------- 4. ROUTING ----------
@@ -62,13 +74,14 @@ function clearRoute() {
   if (fallbackLine) { map.removeLayer(fallbackLine); fallbackLine = null; }
 }
 
-// Finds the start point: Main Entrance, or the phone/laptop GPS
 function getStart(callback) {
   const info = document.getElementById("routeInfo");
+  const entrance = L.latLng(locations[0].lat, locations[0].lng);
+
   if (document.getElementById("startSelect").value === "gps") {
     if (!navigator.geolocation) {
       info.textContent = "GPS not available. Starting from Main Entrance instead.";
-      callback(L.latLng(locations[0].lat, locations[0].lng));
+      callback(entrance);
       return;
     }
     info.textContent = "Finding your location...";
@@ -76,11 +89,11 @@ function getStart(callback) {
       pos => callback(L.latLng(pos.coords.latitude, pos.coords.longitude)),
       () => {
         info.textContent = "Could not get GPS. Starting from Main Entrance instead.";
-        callback(L.latLng(locations[0].lat, locations[0].lng));
+        callback(entrance);
       }
     );
   } else {
-    callback(L.latLng(locations[0].lat, locations[0].lng));
+    callback(entrance);
   }
 }
 
@@ -94,18 +107,17 @@ function showRoute(index) {
 
     routeControl = L.Routing.control({
       waypoints: [start, end],
-      // This server uses walking paths (the word "driving" in the URL is a quirk of it)
       router: L.Routing.osrmv1({
         serviceUrl: "https://routing.openstreetmap.de/routed-foot/route/v1",
         profile: "driving"
       }),
-      show: false,               // hide the text directions panel
+      show: false,
       addWaypoints: false,
       draggableWaypoints: false,
       routeWhileDragging: false,
       fitSelectedRoutes: true,
-      createMarker: () => null,  // we already have our own markers
-      lineOptions: { styles: [{ color: "#ff851b", weight: 6, opacity: 0.9 }] }
+      createMarker: () => null,
+      lineOptions: { styles: [{ color: "#2f6bff", weight: 7, opacity: 0.95 }] }
     }).addTo(map);
 
     routeControl.on("routesfound", function (e) {
@@ -115,80 +127,261 @@ function showRoute(index) {
       info.textContent = `Route to ${dest.name}: ${metres} m, about ${mins} min walk`;
     });
 
-    // If the routing server fails, draw a simple straight dashed line instead
     routeControl.on("routingerror", function () {
       fallbackLine = L.polyline([start, end],
-        { color: "#ff851b", weight: 5, dashArray: "10 10" }).addTo(map);
+        { color: "#2f6bff", weight: 5, dashArray: "10 10" }).addTo(map);
       map.fitBounds(fallbackLine.getBounds(), { padding: [40, 40] });
       info.textContent = `Straight-line view to ${dest.name} (walking route unavailable)`;
     });
   });
 }
 
-// ---------- 5. SEARCH (works with your friend's page) ----------
-function searchCampus() {
-  const input = document.getElementById("searchInput").value.trim().toLowerCase();
-  const cards = document.querySelectorAll(".card");
-  const message = document.getElementById("searchMessage");
-  const mapSection = document.getElementById("campus-map");
-
-  if (input === "") {
-    message.textContent = "Please enter a campus location to search.";
-    cards.forEach(c => c.hidden = false);
-    return;
-  }
-
-  if (locations.length === 0) {
-    message.textContent = "Campus data is still loading. Try again in a moment.";
-    return;
-  }
-
-  // a) Which cards match?
-  let cardFound = false;
-  cards.forEach(function (card) {
-    const matches = card.dataset.place.includes(input);
-    card.hidden = !matches;
-    if (matches) cardFound = true;
-  });
-
-  // b) Which map locations match?
-  const matches = [];
+// ---------- 5. SEARCH, FILTERS AND PLACE LIST ----------
+function getVisible() {
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  const result = [];
   locations.forEach(function (p, i) {
-    if ((p.name + " " + p.keywords).toLowerCase().includes(input)) matches.push(i);
+    const typeOk = activeType === "all" || p.type === activeType;
+    const textOk = q === "" ||
+      (p.name + " " + p.keywords + " " + p.description).toLowerCase().includes(q);
+    if (typeOk && textOk) result.push(i);
+  });
+  return result;
+}
+
+function renderList(visible) {
+  const list = document.getElementById("placeList");
+  list.innerHTML = "";
+
+  visible.forEach(function (i) {
+    const p = locations[i];
+    const item = document.createElement("li");
+    item.className = "place-item";
+    item.innerHTML = `
+      <span class="place-dot" style="background:${typeColors[p.type] || "#2f6bff"}"></span>
+      <div>
+        <div class="place-name">${p.name}</div>
+        <div class="place-desc">${p.description}</div>
+      </div>`;
+    item.addEventListener("click", () => focusPlace(i));
+    list.appendChild(item);
+  });
+}
+
+function applyFilters(shouldFit) {
+  const visible = getVisible();
+  const message = document.getElementById("searchMessage");
+
+  markers.forEach(function (m, i) {
+    if (visible.includes(i)) map.addLayer(m); else map.removeLayer(m);
   });
 
-  if (matches.length === 1) {
-    cards.forEach(c => c.hidden = false);
-    message.textContent = "Found: " + locations[matches[0]].name + ". Showing route on the map below.";
-    mapSection.scrollIntoView({ behavior: "smooth" });
-    showRoute(matches[0]);
-  } else if (matches.length > 1) {
-    cards.forEach(c => c.hidden = false);
-    message.textContent = matches.length + " places match. Tap a marker on the map and choose a route.";
-    clearRoute();
-    map.fitBounds(L.latLngBounds(matches.map(i => markers[i].getLatLng())),
-                  { padding: [60, 60], maxZoom: 18 });
-    mapSection.scrollIntoView({ behavior: "smooth" });
-  } else if (cardFound) {
-    message.textContent = "Matching facilities are shown below. This place is not on the map yet.";
-    document.getElementById("facilities").scrollIntoView({ behavior: "smooth" });
+  renderList(visible);
+
+  if (visible.length === 0) {
+    message.textContent = "No places match. Try canteen, science or lab.";
   } else {
-    message.textContent = "No matching facility found. Try library, canteen, parking or department.";
+    message.textContent = visible.length + (visible.length === 1 ? " place found" : " places found");
+  }
+
+  if (shouldFit && visible.length > 0) {
+    map.fitBounds(L.latLngBounds(visible.map(i => markers[i].getLatLng())),
+                  { padding: [60, 60], maxZoom: 18 });
   }
 }
 
-function quickSearch(word) {
-  document.getElementById("searchInput").value = word;
-  searchCampus();
+function goToMap() {
+  document.getElementById("explore").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-document.getElementById("searchInput").addEventListener("keydown", function (e) {
-  if (e.key === "Enter") searchCampus();
+function focusPlace(i) {
+  map.flyTo(markers[i].getLatLng(), 19, { duration: 0.8 });
+  setTimeout(() => markers[i].openPopup(), 850);
+}
+
+function searchCampus() {
+  if (locations.length === 0) {
+    document.getElementById("searchMessage").textContent = "Campus data is still loading.";
+    return;
+  }
+  applyFilters(true);
+  const visible = getVisible();
+  if (visible.length === 1) focusPlace(visible[0]);
+}
+
+function setChip(type) {
+  document.querySelectorAll(".chip").forEach(c =>
+    c.classList.toggle("active", c.dataset.type === type));
+  activeType = type;
+}
+
+document.getElementById("searchInput").addEventListener("input", () => applyFilters(false));
+document.getElementById("searchBtn").addEventListener("click", searchCampus);
+
+document.querySelectorAll(".chip").forEach(function (chip) {
+  chip.addEventListener("click", function () {
+    setChip(chip.dataset.type);
+    applyFilters(true);
+  });
 });
 
-// Clicking a facility card searches for it too
-document.querySelectorAll(".card").forEach(function (card) {
+// ---------- 6. AUTOCOMPLETE (new in Step 3) ----------
+
+// Finds up to 5 places for the typed text, best matches first
+function findMatches(text) {
+  const q = text.trim().toLowerCase();
+  if (q === "") return [];
+
+  const results = [];
+  locations.forEach(function (p, i) {
+    const name = p.name.toLowerCase();
+    const other = (p.keywords + " " + p.description).toLowerCase();
+    let score = 0;
+    if (name.startsWith(q)) score = 3;         // "can" -> Canteen
+    else if (name.includes(q)) score = 2;      // "science" -> New Science Building
+    else if (other.includes(q)) score = 1;     // "food" -> Canteen (keyword)
+    if (score > 0) results.push({ i: i, score: score });
+  });
+
+  results.sort((a, b) => b.score - a.score || locations[a.i].name.localeCompare(locations[b.i].name));
+  return results.slice(0, 5).map(r => r.i);
+}
+
+// Wraps the matching part of the name in <mark> so it shows highlighted
+function highlight(name, text) {
+  const q = text.trim().toLowerCase();
+  const at = name.toLowerCase().indexOf(q);
+  if (q === "" || at === -1) return name;
+  return name.slice(0, at) + "<mark>" + name.slice(at, at + q.length) + "</mark>" + name.slice(at + q.length);
+}
+
+// Adds a suggestion dropdown to any text box.
+//   onPick(i)  runs when a suggestion is chosen
+//   onEnter()  runs when Enter is pressed with no suggestion selected (optional)
+function attachAutocomplete(input, onPick, onEnter) {
+  const box = document.createElement("ul");
+  box.className = "suggest";
+  box.hidden = true;
+  input.parentElement.appendChild(box);
+
+  let items = [];     // place numbers currently suggested
+  let active = -1;    // which suggestion is highlighted by keyboard
+
+  function close() { box.hidden = true; active = -1; }
+
+  function paintActive() {
+    Array.from(box.children).forEach((li, n) => li.classList.toggle("active", n === active));
+  }
+
+  function pick(i) {
+    close();
+    onPick(i);
+  }
+
+  function render() {
+    const text = input.value;
+    items = findMatches(text);
+    box.innerHTML = "";
+    active = -1;
+
+    if (text.trim() === "") { box.hidden = true; return; }
+
+    if (items.length === 0) {
+      box.innerHTML = '<li class="suggest-empty">No place found. Try canteen or science.</li>';
+      box.hidden = false;
+      return;
+    }
+
+    items.forEach(function (i) {
+      const p = locations[i];
+      const li = document.createElement("li");
+      li.className = "suggest-item";
+      li.innerHTML = `
+        <span class="place-dot" style="background:${typeColors[p.type] || "#2f6bff"}"></span>
+        <span class="suggest-name">${highlight(p.name, text)}</span>
+        <span class="suggest-type">${typeNames[p.type] || p.type}</span>`;
+      // mousedown (not click) so it fires before the box loses focus
+      li.addEventListener("mousedown", function (e) { e.preventDefault(); pick(i); });
+      box.appendChild(li);
+    });
+    box.hidden = false;
+  }
+
+  input.addEventListener("input", render);
+  input.addEventListener("focus", render);
+  input.addEventListener("blur", close);
+
+  input.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown" && items.length) {
+      e.preventDefault();
+      active = (active + 1) % items.length;
+      paintActive();
+    } else if (e.key === "ArrowUp" && items.length) {
+      e.preventDefault();
+      active = (active - 1 + items.length) % items.length;
+      paintActive();
+    } else if (e.key === "Escape") {
+      close();
+    } else if (e.key === "Enter") {
+      if (active >= 0) {
+        e.preventDefault();          // stops the form from submitting
+        pick(items[active]);
+      } else if (onEnter) {
+        close();
+        onEnter();
+      }
+    }
+  });
+}
+
+// Chosen from the panel search box: show that place on the map
+attachAutocomplete(
+  document.getElementById("searchInput"),
+  function (i) {
+    setChip("all");
+    document.getElementById("searchInput").value = locations[i].name;
+    applyFilters(false);
+    focusPlace(i);
+  },
+  searchCampus
+);
+
+// Chosen from the big hero search box: scroll to the map, then show the place
+attachAutocomplete(
+  document.getElementById("heroInput"),
+  function (i) {
+    setChip("all");
+    document.getElementById("heroInput").value = locations[i].name;
+    document.getElementById("searchInput").value = locations[i].name;
+    applyFilters(false);
+    goToMap();
+    setTimeout(() => focusPlace(i), 600);
+  }
+  // no onEnter: pressing Enter submits the hero form, handled below
+);
+
+// ---------- 7. HERO SEARCH AND CATEGORY CARDS ----------
+function heroSearch(word) {
+  setChip("all");
+  document.getElementById("searchInput").value = word;
+  goToMap();
+  setTimeout(searchCampus, 500);
+}
+
+document.getElementById("heroForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  heroSearch(document.getElementById("heroInput").value.trim());
+});
+
+document.querySelectorAll(".hero-quick button").forEach(function (btn) {
+  btn.addEventListener("click", () => heroSearch(btn.dataset.q));
+});
+
+document.querySelectorAll(".cat").forEach(function (card) {
   card.addEventListener("click", function () {
-    quickSearch(card.dataset.place.split(" ")[0]);
+    document.getElementById("searchInput").value = "";
+    setChip(card.dataset.type);
+    goToMap();
+    setTimeout(() => applyFilters(true), 500);
   });
 });

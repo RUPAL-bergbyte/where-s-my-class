@@ -1,625 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>LNCT where's my campus</title>
- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
- <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <style>
-        /* ===== REAL MAP ===== */
-     #map {
-          height: 460px;
-          width: 100%;
-          border-radius: 15px;
-          border: 1px solid #9bb9d9;
-     }
-
-     .map-tools {
-          display: flex;
-          gap: 10px;
-         flex-wrap: wrap;
-          align-items: center;
-          margin-bottom: 12px;
-     }
-
-     .map-tools select {
-          padding: 10px;
-           border-radius: 8px;
-          border: 1px solid #cbd5e1;
-     }
-
-     #routeInfo {
-          font-weight: bold;
-         color: #123c69;
-         min-height: 24px;
-     }
-
-     .custom-marker { background: transparent; border: none; }
-
-     .route-btn {
-          margin-top: 6px;
-          background: #ff851b;
-          color: white;
-          border: none;
-          padding: 6px 10px;
-          border-radius: 6px;
-          cursor: pointer;
-     }
-
-     .quick-links a { cursor: pointer; }
-     .card { cursor: pointer; }
-        /* ===== GENERAL STYLING ===== */
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fb;
-            color: #172b4d;
-            line-height: 1.6;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        /* ===== NAVIGATION BAR ===== */
-
-        nav {
-            background-color: #092c52;
-            color: white;
-            padding: 16px 6%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
-
-        .logo {
-            font-size: 23px;
-            font-weight: bold;
-        }
-
-        .logo span {
-            color: #ff941f;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 22px;
-            flex-wrap: wrap;
-        }
-
-        .nav-links a {
-            color: white;
-            font-size: 14px;
-        }
-
-        .nav-links a:hover {
-            color: #ff941f;
-        }
-
-        /* ===== HERO SECTION WITH YOUR PHOTO ===== */
-
-        .hero {
-            min-height: 440px;
-            padding: 65px 6%;
-            display: flex;
-            align-items: center;
-
-            background-image:
-                linear-gradient(
-                    90deg,
-                    rgba(255, 255, 255, 0.98) 0%,
-                    rgba(255, 255, 255, 0.93) 36%,
-                    rgba(255, 255, 255, 0.35) 70%,
-                    rgba(255, 255, 255, 0.05) 100%
-                ),
-                url("https://lnct.ac.in/wp-content/uploads/2021/04/lnct-slider2-1024x456.jpg");
-
-            background-size: cover;
-            background-position: center 55%;
-            background-repeat: no-repeat;
-        }
-
-        .hero-content {
-            max-width: 620px;
-        }
-
-        .welcome-label {
-            color: #e87916;
-            font-weight: bold;
-            letter-spacing: 3px;
-            font-size: 14px;
-        }
-
-        .hero h1 {
-            color: #092c52;
-            font-size: clamp(30px, 4vw, 46px);
-            line-height: 1.2;
-            margin: 12px 0;
-        }
-
-        .hero p {
-            color: #334155;
-            margin-bottom: 20px;
-        }
-
-        /* ===== SEARCH BAR ===== */
-
-        .search-box {
-            display: flex;
-            gap: 8px;
-            max-width: 510px;
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            flex: 1;
-            min-width: 0;
-            padding: 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-        }
-
-        .search-box button {
-            background-color: #ff851b;
-            color: white;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .search-box button:hover {
-            background-color: #df6c0b;
-        }
-
-        #searchMessage {
-            font-weight: bold;
-            color: #123c69;
-            min-height: 24px;
-        }
-
-        .quick-links {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .quick-links a {
-            background: white;
-            color: #123c69;
-            padding: 7px 13px;
-            border-radius: 25px;
-            font-size: 13px;
-            border: 1px solid #dbe5f0;
-        }
-
-        .quick-links a:hover {
-            background: #e7f2ff;
-        }
-
-        /* ===== COLLEGE HIGHLIGHTS ===== */
-
-        .highlights {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            padding: 24px 6%;
-            background-color: white;
-            text-align: center;
-        }
-
-        .highlight {
-            padding: 10px;
-        }
-
-        .highlight strong {
-            display: block;
-            color: #123c69;
-            font-size: 17px;
-        }
-
-        .highlight span {
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        /* ===== FACILITIES SECTION ===== */
-
-        .facilities {
-            padding: 50px 6%;
-        }
-
-        .section-heading {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .section-heading h2 {
-            color: #092c52;
-            font-size: 29px;
-            margin-bottom: 8px;
-        }
-
-        .section-heading p {
-            color: #64748b;
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .card {
-            background: white;
-            padding: 24px 20px;
-            border-radius: 12px;
-            box-shadow: 0 3px 14px rgba(15, 45, 75, 0.08);
-            border: 1px solid #e4edf7;
-            transition: transform 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-icon {
-            font-size: 34px;
-            margin-bottom: 10px;
-        }
-
-        .card h3 {
-            color: #123c69;
-            margin-bottom: 8px;
-        }
-
-        .card p {
-            color: #64748b;
-            font-size: 14px;
-        }
-
-        .card[hidden] {
-            display: none;
-        }
-
-        /* ===== CAMPUS MAP SECTION ===== */
-
-        .map-section {
-            padding: 45px 6%;
-            background: #e8f3ff;
-        }
-
-        .map-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .map-content h2 {
-            font-size: 30px;
-            color: #092c52;
-            margin-bottom: 12px;
-        }
-
-        .map-content p {
-            color: #475569;
-            margin-bottom: 18px;
-        }
-
-        .map-button {
-            display: inline-block;
-            background: #123c69;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .map-button:hover {
-            background: #20578d;
-        }
-
-        .map-placeholder {
-            min-height: 240px;
-            background: white;
-            border: 2px dashed #9bb9d9;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .map-placeholder div {
-            font-size: 58px;
-            margin-bottom: 10px;
-        }
-
-        .map-placeholder p {
-            margin: 5px 0;
-        }
-
-        /* ===== FOOTER ===== */
-
-        footer {
-            background: #092c52;
-            color: white;
-            text-align: center;
-            padding: 25px 15px;
-        }
-
-        footer h3 {
-            margin-bottom: 8px;
-        }
-
-        footer p {
-            font-size: 13px;
-            color: #d7e4f2;
-            margin: 4px 0;
-        }
-
-        /* ===== MOBILE RESPONSIVENESS ===== */
-
-        @media (max-width: 800px) {
-            .cards {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .map-content {
-                grid-template-columns: 1fr;
-            }
-
-            .hero {
-                background-position: center;
-            }
-        }
-
-        @media (max-width: 550px) {
-            nav {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .nav-links {
-                justify-content: center;
-                gap: 14px;
-            }
-
-            .hero {
-                min-height: 430px;
-                padding: 35px 5%;
-                background-position: center;
-            }
-
-            .hero h1 {
-                font-size: 30px;
-            }
-
-            .hero p {
-                font-size: 14px;
-            }
-
-            .search-box {
-                flex-direction: column;
-            }
-
-            .search-box button {
-                width: 100%;
-            }
-
-            .highlights {
-                grid-template-columns: 1fr;
-                gap: 5px;
-            }
-
-            .cards {
-                grid-template-columns: 1fr;
-            }
-
-            .section-heading h2 {
-                font-size: 25px;
-            }
-
-            .map-content h2 {
-                font-size: 26px;
-            }
-        }
-                        
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Where's My Class? | LNCT Campus Navigation</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-    <!-- NAVIGATION BAR -->
-
-    <nav>
-        <div class="logo">
-            <span>LNCT</span> Campus Navigator
-        </div>
-
-        <div class="nav-links">
-            <a href="#home">Home</a>
-            <a href="#facilities">Facilities</a>
-            <a href="#campus-map">Campus Map</a>
-            <a href="#about">About</a>
-        </div>
+  <!-- ===== TOP NAVIGATION (floats over the hero) ===== -->
+  <header class="topbar">
+    <a class="brand" href="#home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">Where's My Class?</span>
+    </a>
+    <nav class="topnav" aria-label="Main">
+      <a href="#home">Home</a>
+      <a href="#explore">Explore</a>
+      <a href="#how">How it works</a>
+      <a href="#about">About</a>
     </nav>
+    <a class="nav-cta" href="#explore">Open map</a>
+  </header>
 
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="home">
+    <div class="hero-grid" aria-hidden="true"></div>
 
-    <!-- WELCOME SECTION WITH LNCT PHOTO -->
+    <div class="hero-text">
+      <p class="hero-tag">LNCT Bhopal campus navigation</p>
+      <h1>Never ask <em>"where's my class?"</em> again.</h1>
+      <p class="hero-sub">
+        A live map of the whole LNCT campus. Search any building, lab or facility,
+        see it on the map, and get a walking route with distance and time.
+        Made for first-year students, faculty and visitors.
+      </p>
 
-    <section class="hero" id="home">
-        <div class="hero-content">
+      <form class="hero-search" id="heroForm">
+        <input id="heroInput" type="search" autocomplete="off"
+               placeholder="Try: canteen, science building, workshop"
+               aria-label="Search the campus">
+        <button type="submit">Find it</button>
+      </form>
 
-            <div class="welcome-label">WELCOME TO</div>
-
-            <h1>LNCT Group of Colleges</h1>
-
-            <p>
-                Your smart guide to exploring the LNCT campus.
-                Find academic blocks, departments, the library,
-                canteen and other campus facilities in one place.
-            </p>
-
-            <div class="search-box">
-                <input
-                    type="text"
-                    id="searchInput"
-                    placeholder="Search library, canteen, department..."
-                    aria-label="Search campus facilities"
-                >
-
-                <button type="button" onclick="searchCampus()">
-                    Search
-                </button>
-            </div>
-
-            <p id="searchMessage" aria-live="polite"></p>
-
-            <div class="quick-links">
-         <a onclick="quickSearch('library')">📚 Library</a>
-         <a onclick="quickSearch('department')">🏫 Departments</a>
-         <a onclick="quickSearch('canteen')">🍽️ Canteen</a>
-         <a onclick="quickSearch('auditorium')">🎤 Auditorium</a>
-         </div>
-
-        </div>
-    </section>
-
-
-    <!-- COLLEGE HIGHLIGHTS -->
-
-    <section class="highlights">
-        <div class="highlight">
-            <strong>Academic Blocks</strong>
-            <span>Find your classrooms</span>
-        </div>
-
-        <div class="highlight">
-            <strong>Campus Facilities</strong>
-            <span>Explore important places</span>
-        </div>
-
-        <div class="highlight">
-            <strong>Easy Navigation</strong>
-            <span>Campus guide in one place</span>
-        </div>
-    </section>
-
-
-    <!-- CAMPUS FACILITIES -->
-
-    <section class="facilities" id="facilities">
-
-        <div class="section-heading">
-            <h2>Explore Campus Facilities</h2>
-            <p>Quick access to important campus locations</p>
-        </div>
-
-        <div class="cards">
-
-            <div class="card" data-place="library">
-                <div class="card-icon">📚</div>
-                <h3>Library</h3>
-                <p>Find books, study resources and reading spaces.</p>
-            </div>
-
-            <div class="card" data-place="academic block department classroom">
-                <div class="card-icon">🏫</div>
-                <h3>Academic Blocks</h3>
-                <p>Locate classrooms, departments and laboratories.</p>
-            </div>
-
-            <div class="card" data-place="canteen cafeteria food">
-                <div class="card-icon">🍽️</div>
-                <h3>Canteen</h3>
-                <p>Find campus food and refreshment areas.</p>
-            </div>
-
-            <div class="card" data-place="auditorium seminar">
-                <div class="card-icon">🎤</div>
-                <h3>Auditorium</h3>
-                <p>Locate event, seminar and gathering spaces.</p>
-            </div>
-
-            <div class="card" data-place="administration office">
-                <div class="card-icon">🏢</div>
-                <h3>Admin Office</h3>
-                <p>Find the college administration office.</p>
-            </div>
-
-            <div class="card" data-place="parking vehicle">
-                <div class="card-icon">🅿️</div>
-                <h3>Parking</h3>
-                <p>Locate designated vehicle parking areas.</p>
-            </div>
-
-        </div>
-    </section>
-
-
-   <!-- CAMPUS MAP -->
- <section class="map-section" id="campus-map">
-    <div class="section-heading">
-        <h2>🗺️ Campus Map</h2>
-        <p>Search a place above, or tap a marker and choose "Get walking route".</p>
+      <div class="hero-quick">
+        <button type="button" data-q="canteen">Canteen</button>
+        <button type="button" data-q="science">Science buildings</button>
+        <button type="button" data-q="workshop">Workshop</button>
+        <button type="button" data-q="ground">Ground</button>
+      </div>
     </div>
 
-    <div class="map-tools">
-        <label for="startSelect"><b>Start from:</b></label>
-        <select id="startSelect">
-            <option value="entrance">Main Entrance</option>
-            <option value="gps">My current location (GPS)</option>
-        </select>
+    <!-- animated route preview -->
+    <div class="hero-preview glass" aria-hidden="true">
+      <svg viewBox="0 0 420 300">
+        <path class="route-ghost" d="M50 250 C 130 240, 100 140, 210 140 S 330 80, 370 45" />
+        <path class="route-live"  d="M50 250 C 130 240, 100 140, 210 140 S 330 80, 370 45" />
+        <circle class="pin-pulse" cx="50" cy="250" r="9" />
+        <circle class="pin-start" cx="50" cy="250" r="7" />
+        <circle class="pin-pulse end" cx="370" cy="45" r="9" />
+        <circle class="pin-end" cx="370" cy="45" r="7" />
+        <text x="62" y="278" class="pin-label">Main Entrance</text>
+        <text x="228" y="38" class="pin-label">Science Building</text>
+      </svg>
+      <div class="preview-chip">4 min walk</div>
     </div>
+  </section>
 
-    <p id="routeInfo"></p>
+  <!-- ===== STATS STRIP ===== -->
+  <section class="strip">
+    <div><strong id="statPlaces">6</strong><span>places mapped</span></div>
+    <div><strong>Live</strong><span>walking routes</span></div>
+    <div><strong>3</strong><span>map views: dark, street, satellite</span></div>
+    <div><strong>GPS</strong><span>start from where you stand</span></div>
+  </section>
+
+  <!-- ===== EXPLORE: BIG MAP WITH FLOATING PANEL ===== -->
+  <section class="explore" id="explore">
     <div id="map"></div>
- </section>
-    <!-- ABOUT AND FOOTER -->
 
-    <footer id="about">
-        <h3>LNCT Campus Navigator</h3>
+    <aside class="panel glass">
+      <h2>Explore the campus</h2>
 
-        <p>
-            A student project to make campus navigation easier.
-        </p>
+      <div class="search-row">
+        <input id="searchInput" type="search" autocomplete="off"
+               placeholder="Search places..." aria-label="Search campus places">
+        <button id="searchBtn" type="button">Search</button>
+      </div>
 
-        <p>
-            LNCT Group of Colleges, Bhopal
-        </p>
+      <div class="chips" role="group" aria-label="Filter by category">
+        <button class="chip active" data-type="all">All</button>
+        <button class="chip" data-type="building">Buildings</button>
+        <button class="chip" data-type="lab">Labs</button>
+        <button class="chip" data-type="facility">Facilities</button>
+        <button class="chip" data-type="entrance">Entrance</button>
+      </div>
 
-        <p>
-            © 2026 LNCT Campus Navigator | Student Project
-        </p>
-    </footer>
+      <p id="searchMessage" aria-live="polite"></p>
+      <ul id="placeList" class="place-list"></ul>
 
+      <div class="nav-panel">
+        <label for="startSelect">Start walking from</label>
+        <select id="startSelect">
+          <option value="entrance">Main Entrance</option>
+          <option value="gps">My current location (GPS)</option>
+        </select>
+        <p id="routeInfo" aria-live="polite">Pick a place, then tap "Get walking route".</p>
+      </div>
+    </aside>
+  </section>
 
-    <!-- SEARCH FUNCTIONALITY -->
+  <!-- ===== CATEGORIES ===== -->
+  <section class="section" id="categories">
+    <h2 class="section-title">Browse by what you need</h2>
+    <div class="cat-grid">
+      <button class="cat" data-type="building"><b>Buildings</b><span>Academic blocks and classrooms</span><i data-count="building">0</i></button>
+      <button class="cat" data-type="lab"><b>Labs</b><span>Laboratories and workshops</span><i data-count="lab">0</i></button>
+      <button class="cat" data-type="facility"><b>Facilities</b><span>Canteen, grounds and common areas</span><i data-count="facility">0</i></button>
+      <button class="cat" data-type="entrance"><b>Entrances</b><span>Gates and arrival points</span><i data-count="entrance">0</i></button>
+    </div>
+  </section>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
-    <script src="map.js"></script>
+  <!-- ===== HOW IT WORKS ===== -->
+  <section class="section" id="how">
+    <h2 class="section-title">Three steps to any destination</h2>
+    <div class="steps">
+      <div class="step"><span>1</span><h3>Search</h3><p>Type a building, lab or facility, or tap a category.</p></div>
+      <div class="step"><span>2</span><h3>Pick</h3><p>See it on the map. Tap the marker to open its details.</p></div>
+      <div class="step"><span>3</span><h3>Walk</h3><p>Choose where you start and follow the route. Distance and time are shown for you.</p></div>
+    </div>
+  </section>
 
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" id="about">
+    <div class="footer-brand">
+      <strong>Where's My Class?</strong>
+      <p>Navigate. Discover. Belong.</p>
+    </div>
+    <p>A student project that makes finding your way around LNCT Bhopal simple.</p>
+    <p>© 2026 Where's My Class? Student project.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+  <script src="map.js"></script>
 </body>
 </html>
