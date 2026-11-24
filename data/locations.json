@@ -3,13 +3,13 @@
     "type": "entrance", "description": "Main gate into LNCT campus",
     "keywords": "gate entrance main", "photo": "", "floor": "" },
 
-  { "id": "new-science", "name": "New Science Building", "lat": 23.249670, "lng": 77.527634,
-    "type": "building", "description": "New Science Building, LNCT campus",
-    "keywords": "science building academic block department classroom", "photo": "", "floor": "" },
+  { "id": "new-science", "name": "New Science Building (New Block)", "lat": 23.249670, "lng": 77.527634,
+    "type": "building", "description": "New Block: classrooms, civil labs, CSE, library, seminar halls (4 floors)",
+    "keywords": "new block science building academic block department classroom civil seminar", "photo": "", "floor": "" },
 
-  { "id": "old-science", "name": "Old Science Building", "lat": 23.249152, "lng": 77.527682,
-    "type": "building", "description": "Old Science Building, LNCT campus",
-    "keywords": "science building academic block department classroom", "photo": "", "floor": "" },
+  { "id": "old-science", "name": "Old Science Building (Old Block)", "lat": 23.249152, "lng": 77.527682,
+    "type": "building", "description": "Old Block: reception, CSE, Chemistry, Physics, ECE (4 floors)",
+    "keywords": "old block science building academic block department classroom reception cse ece", "photo": "", "floor": "" },
 
   { "id": "science-workshop", "name": "Science Workshop", "lat": 23.248610, "lng": 77.527868,
     "type": "lab", "description": "Science workshop area",

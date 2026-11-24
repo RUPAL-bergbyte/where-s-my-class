@@ -4,6 +4,7 @@
   --charcoal: #111926;
   --lime: #b6f03c;
   --blue: #2f6bff;
+  --sky: #38bdf8;
   --text: #eaf0ff;
   --muted: #8f9bb8;
   --line: rgba(255, 255, 255, 0.1);
@@ -300,7 +301,7 @@ button { font: inherit; }
 .place-list {
   list-style: none;
   flex: 1;
-  min-height: 0;
+  min-height: 90px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -328,6 +329,8 @@ button { font: inherit; }
   background: rgba(47,107,255,0.14);
   border: 1px solid rgba(47,107,255,0.45);
   border-radius: 12px;
+  max-height: 52%;
+  overflow-y: auto;
 }
 .nav-panel label { font-size: 13px; color: var(--muted); }
 .nav-panel select {
@@ -343,6 +346,16 @@ button { font: inherit; }
 }
 #routeInfo { font-size: 14px; font-weight: 700; color: var(--lime); }
 
+/* ===== INDOOR DIRECTIONS CARD ===== */
+.indoor { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(47,107,255,0.45); }
+.indoor[hidden] { display: none; }
+.indoor h3 { font-family: "Sora", sans-serif; font-size: 16px; }
+.indoor > p { font-size: 12px; color: var(--sky); margin-bottom: 8px; }
+.indoor ol { margin: 0 0 10px 18px; font-size: 13px; color: #d6def2; }
+.indoor li { margin-bottom: 7px; padding-left: 2px; }
+.indoor li::marker { color: var(--lime); font-weight: 800; }
+.indoor li b { color: var(--lime); }
+
 .custom-marker { background: transparent; border: none; }
 .route-btn {
   margin-top: 8px;
@@ -355,6 +368,9 @@ button { font: inherit; }
   cursor: pointer;
 }
 .route-btn:hover { background: #4a80ff; }
+.route-btn.alt { background: transparent; color: var(--lime); border: 1px solid var(--lime); margin-left: 6px; }
+.route-btn.alt:hover { background: var(--lime); color: var(--navy); }
+.indoor .route-btn.alt { margin-left: 0; }
 
 .leaflet-popup-content-wrapper, .leaflet-popup-tip {
   background: var(--charcoal); color: var(--text); border: 1px solid var(--line);
@@ -390,6 +406,43 @@ button { font: inherit; }
   position: absolute; top: 20px; right: 20px;
   font-style: normal; font-weight: 800; font-size: 22px; color: var(--lime);
 }
+
+/* ===== FLOOR PLAN BROWSER ===== */
+.plan-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.plan-view { display: grid; grid-template-columns: 1.3fr 1fr; gap: 24px; margin-top: 10px; align-items: start; }
+.plan-fig {
+  padding: 14px;
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.plan-fig img { width: 100%; display: block; border-radius: 10px; background: #fff; }
+.plan-fig img[hidden] { display: none; }
+.plan-fig figcaption { margin-top: 10px; font-size: 13px; color: var(--muted); }
+.plan-hint { font-size: 13px; color: var(--muted); margin-bottom: 10px; }
+.plan-rooms {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.plan-room {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 10px 14px;
+  background: var(--charcoal);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.plan-room b { color: var(--lime); min-width: 74px; font-family: "Sora", sans-serif; font-size: 13px; }
+.plan-room span { color: var(--text); }
+.plan-room:hover, .plan-room.active { border-color: var(--blue); background: rgba(47,107,255,0.14); }
 
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .step {
@@ -432,18 +485,21 @@ button { font: inherit; }
   .strip { grid-template-columns: repeat(2, 1fr); }
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .steps { grid-template-columns: 1fr; }
+  .plan-view { grid-template-columns: 1fr; }
   .footer { grid-template-columns: 1fr; }
 
   /* on phones the panel sits under the map instead of floating on it */
   .explore { height: auto; display: flex; flex-direction: column; }
   #map { position: relative; height: 55vh; }
-  .panel { position: relative; top: auto; left: auto; bottom: auto; width: auto; margin: 12px; max-height: 480px; }
+  .panel { position: relative; top: auto; left: auto; bottom: auto; width: auto; margin: 12px; max-height: none; }
+  .nav-panel { max-height: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .route-live { stroke-dashoffset: 0; }
 }
+
 /* ===== AUTOCOMPLETE SUGGESTIONS ===== */
 .hero-search, .search-row { position: relative; }
 
@@ -477,6 +533,40 @@ button { font: inherit; }
 
 .suggest-name { flex: 1; }
 .suggest-name mark { background: none; color: var(--lime); font-weight: 700; }
-.suggest-type { font-size: 12px; color: var(--muted); }
+.suggest-type { font-size: 12px; color: var(--muted); text-align: right; }
 
 .suggest-empty { padding: 10px 12px; font-size: 13px; color: var(--muted); }
+
+/* ===== ROOM HIGHLIGHT ON FLOOR PLANS ===== */
+.plan-stage { position: relative; }
+.plan-stage[hidden] { display: none; }
+.plan-stage img { width: 100%; display: block; }
+.plan-stage.mini { margin: 8px 0 10px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; cursor: zoom-in; }
+
+.plan-pin {
+  position: absolute;
+  width: 28px; height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 3px solid #ff3b5c;
+  border-radius: 50%;
+  background: rgba(255, 59, 92, 0.22);
+  box-shadow: 0 0 0 0 rgba(255, 59, 92, 0.7);
+  animation: pinPulse 1.6s ease-out infinite;
+  pointer-events: none;
+}
+.plan-stage.mini .plan-pin { width: 18px; height: 18px; margin: -9px 0 0 -9px; border-width: 2px; }
+@keyframes pinPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 59, 92, 0.7); }
+  100% { box-shadow: 0 0 0 18px rgba(255, 59, 92, 0); }
+}
+
+.plan-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-top: 10px; padding: 8px 12px;
+  background: rgba(255, 59, 92, 0.12);
+  border: 1px solid rgba(255, 59, 92, 0.5);
+  border-radius: 10px;
+  font-size: 14px; font-weight: 700;
+}
+.plan-bar[hidden] { display: none; }
+.plan-bar .route-btn { margin-top: 0; white-space: nowrap; }

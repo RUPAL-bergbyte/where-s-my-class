@@ -23,6 +23,7 @@
     <nav class="topnav" aria-label="Main">
       <a href="#home">Home</a>
       <a href="#explore">Explore</a>
+      <a href="#plans">Floor plans</a>
       <a href="#how">How it works</a>
       <a href="#about">About</a>
     </nav>
@@ -37,23 +38,24 @@
       <p class="hero-tag">LNCT Bhopal campus navigation</p>
       <h1>Never ask <em>"where's my class?"</em> again.</h1>
       <p class="hero-sub">
-        A live map of the whole LNCT campus. Search any building, lab or facility,
-        see it on the map, and get a walking route with distance and time.
-        Made for first-year students, faculty and visitors.
+        Search any building, lab, classroom or toilet on the LNCT campus. Get a walking route
+        to the block, then step-by-step directions inside it: which entrance, which stairs,
+        which floor, which corridor. Made for first-year students, faculty and visitors.
       </p>
 
       <form class="hero-search" id="heroForm">
         <input id="heroInput" type="search" autocomplete="off"
-               placeholder="Try: canteen, science building, workshop"
+               placeholder="Try: F-14, DSA lab, library, canteen"
                aria-label="Search the campus">
         <button type="submit">Find it</button>
       </form>
 
       <div class="hero-quick">
         <button type="button" data-q="canteen">Canteen</button>
-        <button type="button" data-q="science">Science buildings</button>
-        <button type="button" data-q="workshop">Workshop</button>
-        <button type="button" data-q="ground">Ground</button>
+        <button type="button" data-q="cse">CSE labs</button>
+        <button type="button" data-q="library">Library</button>
+        <button type="button" data-q="principal">Principal office</button>
+        <button type="button" data-q="toilet">Toilets</button>
       </div>
     </div>
 
@@ -67,17 +69,17 @@
         <circle class="pin-pulse end" cx="370" cy="45" r="9" />
         <circle class="pin-end" cx="370" cy="45" r="7" />
         <text x="62" y="278" class="pin-label">Main Entrance</text>
-        <text x="228" y="38" class="pin-label">Science Building</text>
+        <text x="228" y="38" class="pin-label">Room F-14</text>
       </svg>
-      <div class="preview-chip">4 min walk</div>
+      <div class="preview-chip">Gate to desk</div>
     </div>
   </section>
 
   <!-- ===== STATS STRIP ===== -->
   <section class="strip">
     <div><strong id="statPlaces">6</strong><span>places mapped</span></div>
-    <div><strong>Live</strong><span>walking routes</span></div>
-    <div><strong>3</strong><span>map views: dark, street, satellite</span></div>
+    <div><strong id="statRooms">0</strong><span>rooms with directions</span></div>
+    <div><strong>2 blocks</strong><span>4 floors each</span></div>
     <div><strong>GPS</strong><span>start from where you stand</span></div>
   </section>
 
@@ -90,12 +92,13 @@
 
       <div class="search-row">
         <input id="searchInput" type="search" autocomplete="off"
-               placeholder="Search places..." aria-label="Search campus places">
+               placeholder="Search places or rooms (F-14, library)..." aria-label="Search campus places and rooms">
         <button id="searchBtn" type="button">Search</button>
       </div>
 
       <div class="chips" role="group" aria-label="Filter by category">
         <button class="chip active" data-type="all">All</button>
+        <button class="chip" data-type="room">Rooms</button>
         <button class="chip" data-type="building">Buildings</button>
         <button class="chip" data-type="lab">Labs</button>
         <button class="chip" data-type="facility">Facilities</button>
@@ -111,7 +114,17 @@
           <option value="entrance">Main Entrance</option>
           <option value="gps">My current location (GPS)</option>
         </select>
-        <p id="routeInfo" aria-live="polite">Pick a place, then tap "Get walking route".</p>
+        <p id="routeInfo" aria-live="polite">Pick a place or room to get directions.</p>
+
+        <div id="indoorCard" class="indoor" hidden>
+          <h3 id="indoorTitle"></h3>
+          <p id="indoorMeta"></p>
+          <ol id="indoorSteps"></ol>
+          <div class="plan-stage mini" id="indoorStage" hidden title="Open the full floor plan">
+            <img id="indoorImg" alt="Floor plan with the room marked">
+          </div>
+          <button id="indoorPlanBtn" type="button" class="route-btn alt">See this floor's plan</button>
+        </div>
       </div>
     </aside>
   </section>
@@ -127,13 +140,34 @@
     </div>
   </section>
 
+  <!-- ===== FLOOR PLANS ===== -->
+  <section class="section" id="plans">
+    <h2 class="section-title">Floor plans, block by block</h2>
+    <div class="plan-tabs" id="planBlocks"></div>
+    <div class="plan-tabs" id="planFloors"></div>
+    <div class="plan-view">
+      <figure class="plan-fig">
+        <div class="plan-stage" id="planStage"><img id="planImg" alt="Floor plan"></div>
+        <figcaption id="planNote"></figcaption>
+        <div class="plan-bar" id="planBar" hidden>
+          <span id="planBarText"></span>
+          <button type="button" class="route-btn" id="planBarBtn">Get directions</button>
+        </div>
+      </figure>
+      <div>
+        <p class="plan-hint">Tap a room to mark it on the plan.</p>
+        <ul id="planRooms" class="plan-rooms"></ul>
+      </div>
+    </div>
+  </section>
+
   <!-- ===== HOW IT WORKS ===== -->
   <section class="section" id="how">
-    <h2 class="section-title">Three steps to any destination</h2>
+    <h2 class="section-title">Three steps to any room</h2>
     <div class="steps">
-      <div class="step"><span>1</span><h3>Search</h3><p>Type a building, lab or facility, or tap a category.</p></div>
-      <div class="step"><span>2</span><h3>Pick</h3><p>See it on the map. Tap the marker to open its details.</p></div>
-      <div class="step"><span>3</span><h3>Walk</h3><p>Choose where you start and follow the route. Distance and time are shown for you.</p></div>
+      <div class="step"><span>1</span><h3>Search</h3><p>Type a room number like F-14, a lab, a department or a facility.</p></div>
+      <div class="step"><span>2</span><h3>Pick</h3><p>Choose the result. The map zooms to the block and a route is drawn from the gate.</p></div>
+      <div class="step"><span>3</span><h3>Follow</h3><p>Read the steps: entrance, stairs, floor, corridor and the rooms you will pass.</p></div>
     </div>
   </section>
 

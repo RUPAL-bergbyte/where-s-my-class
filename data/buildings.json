@@ -1,0 +1,258 @@
+{
+  "old": {
+    "name": "Old Block",
+    "locationId": "old-science",
+    "entry": "Enter the Old Block through its main entrance (the arrow on the ground-floor plan). You step into the lobby with the Reception desk.",
+    "stairs": {
+      "main": "the main staircase in the curved top-left corner of the block (beside G-13 / F-12 / S-12 / T-14)"
+    },
+    "floors": {
+      "G": { "name": "Ground floor", "slug": "ground", "kw": "administration exam training placement" },
+      "F": { "name": "First floor", "slug": "first", "dept": "Computer Science & Engineering (CSE)", "kw": "cse computer science" },
+      "S": { "name": "Second floor", "slug": "second", "kw": "chemistry physics applied science first year" },
+      "T": { "name": "Third floor", "slug": "third", "dept": "Electronics & Communication Engineering (ECE)", "kw": "ece electronics communication" }
+    },
+    "zones": {
+      "lobby": {
+        "g": "Reception is straight ahead of you in the lobby."
+      },
+      "left": {
+        "g": "Turn left from the lobby and walk up the left wing toward the main staircase.",
+        "up": "From the stairs landing, go straight along the left wing with the central atrium on your right."
+      },
+      "top": {
+        "g": "Walk up the left wing to the main staircase corner, then turn right along the top corridor.",
+        "up": "From the stairs landing, turn right and follow the top corridor."
+      },
+      "topright": {
+        "g": "Follow the top corridor to its far end; the small rooms are tucked into the top-right corner.",
+        "up": "Follow the top corridor to its far end; the small rooms (toilets / stores) are tucked into the top-right corner."
+      },
+      "right": {
+        "g": "Follow the top corridor to the far end, then turn down the right wing.",
+        "up": "Follow the top corridor to the far end, then turn down the right wing."
+      },
+      "bottomright": {
+        "g": "Continue down the right wing to the bottom-right corner.",
+        "up": "Continue down the right wing to the bottom-right corner."
+      },
+      "bottom": {
+        "g": "Go past Reception; the rooms run along the south side of the central atrium.",
+        "up": "From the stairs landing go down the left wing to its bottom end, then turn along the bottom wing (south side of the atrium)."
+      },
+      "south": {
+        "up": "At the bottom end of the left wing, keep going straight into the wing that projects south."
+      }
+    },
+    "rooms": {
+      "G": [
+        ["Lobby", "Reception", "lobby", "reception desk enquiry help entrance"],
+        ["G-11", "Office", "left", "administration"],
+        ["G-12", "Training & Placement", "left", "tnp t&p placement"],
+        ["G-13", "Girls Common Room", "left"],
+        ["G-01", "Class Room", "top"],
+        ["G-02", "Exam Section", "top", "exam"],
+        ["G-03", "Exam Section Store Room", "top"],
+        ["G-04", "Class Room", "top"],
+        ["G-05", "Boys Toilet", "topright"],
+        ["G-06", "Store Room", "topright"],
+        ["G-07", "NCC Office", "topright", "ncc"],
+        ["G-08", "Class Room", "right"],
+        ["G-10", "Class Room", "bottom"],
+        ["G-09(A)", "Class Room", "bottom"],
+        ["G-09", "Class Room", "bottom"]
+      ],
+      "F": [
+        ["F-11/12", "Computer Center Lab", "left", "computer centre"],
+        ["F-01", "Software Lab", "top"],
+        ["F-02", "Class Room", "top"],
+        ["F-03", "Boys Toilet", "topright"],
+        ["F-04", "Staff Toilet", "topright"],
+        ["F-05", "Girls Toilet", "topright"],
+        ["F-06", "Departmental Library", "right", "library books"],
+        ["F-06(A)", "Faculty Room", "right", "faculty staff"],
+        ["F-07", "Class Room", "bottomright"],
+        ["F-08/09", "Project Lab", "bottom"],
+        ["F-10(A)", "Language / Network Lab", "south", "network"],
+        ["F-10(B)", "BCE Lab / DB & OS Lab", "south", "bce database dbms os"]
+      ],
+      "S": [
+        ["S-11(A)/12", "PLC Automation Lab", "left", "plc"],
+        ["S-11", "BEEE Lab", "left", "beee"],
+        ["S-01", "Department of Chemistry", "top", "chemistry"],
+        ["S-02", "Class Room", "top"],
+        ["S-03", "Boys Toilet", "topright"],
+        ["S-04", "Girls Toilet", "topright"],
+        ["S-05", "Store Room", "topright"],
+        ["S-06", "Conference Room", "right"],
+        ["S-06(A)", "Faculty Room", "right", "faculty staff"],
+        ["S-07", "Class Room", "bottomright"],
+        ["S-09", "Engg. Physics Lab", "bottom", "physics"],
+        ["S-08", "HOD / Department of Physics", "bottom", "hod physics"],
+        ["S-10", "Drawing Hall", "south", "engineering drawing graphics"]
+      ],
+      "T": [
+        ["T-14/15", "Project Lab", "left"],
+        ["T-13", "Software Lab-II / VLSI Design", "left", "vlsi"],
+        ["T-01", "Antenna and Wave Propagation / CNTL / Microwave Engineering Lab", "top", "antenna microwave"],
+        ["T-02", "Microprocessor and Micro Controller / Software Lab-I", "top", "microprocessor microcontroller"],
+        ["T-03", "Digital Circuits and Systems / Optical Communication Lab", "top", "digital optical"],
+        ["T-04", "Boys Toilet", "topright"],
+        ["T-05", "Staff Toilet (Male)", "topright"],
+        ["T-06", "Staff Toilet (Female)", "topright"],
+        ["T-07", "Conference Room / Departmental Library", "right", "library books"],
+        ["T-08", "HOD Room", "right", "hod head of department"],
+        ["T-11/12", "Communication Lab", "bottom"],
+        ["T-10", "Faculty Room", "bottom", "faculty staff"],
+        ["T-09", "Electronics Lab", "bottom"]
+      ]
+    }
+  },
+
+  "new": {
+    "name": "New Block",
+    "locationId": "new-science",
+    "entry": "Enter the New Block through the entrance on the ground floor (the arrow on the ground-floor plan), into the corridor beside the Engineering Mechanics Lab (G-17).",
+    "stairs": {
+      "nw": "the staircase in the top-left corner of the block (next to the toilets)",
+      "se": "the staircase in the bottom-right corner of the block (next to the toilets)"
+    },
+    "floors": {
+      "G": { "name": "Ground floor", "slug": "ground", "kw": "civil engineering" },
+      "F": { "name": "First floor", "slug": "first", "dept": "Computer Science & Engineering (CSE)", "kw": "cse computer science" },
+      "S": { "name": "Second floor", "slug": "second", "kw": "civil engineering principal" },
+      "T": { "name": "Third floor", "slug": "third", "kw": "mechanical mathematics humanities" }
+    },
+    "zones": {
+      "top": {
+        "stairs": "nw",
+        "g": "Walk to the top-left (north-west) corner of the block, then turn right along the top corridor.",
+        "up": "From the stairs landing, turn right and follow the top corridor."
+      },
+      "left": {
+        "stairs": "nw",
+        "g": "The left-wing rooms are right beside the entry corridor. Look along the left side of the block.",
+        "up": "From the stairs landing, go down the left wing with the central atrium on your right."
+      },
+      "right": {
+        "stairs": "nw",
+        "g": "Follow the top corridor to the top-right corner, then turn down the right wing.",
+        "up": "Follow the top corridor to the top-right corner, then turn down the right wing."
+      },
+      "bottom": {
+        "stairs": "nw",
+        "g": "Go to the bottom-left corner of the block and walk east along the bottom wing; the rooms are on the south side.",
+        "up": "From the stairs landing go down the left wing to the bottom-left corner, then turn east along the bottom wing; the rooms are on the south side."
+      },
+      "se": {
+        "stairs": "se",
+        "g": "Follow the bottom wing east to the bottom-right corner of the block.",
+        "up": "The rooms are right next to the bottom-right staircase."
+      },
+      "center": {
+        "stairs": "nw",
+        "g": "The large hall in the middle of the block, on the south side of the central atrium.",
+        "up": "The large hall in the middle of the block, on the south side of the central atrium. Enter from the left wing."
+      }
+    },
+    "rooms": {
+      "G": [
+        ["G-17", "Engineering Mechanics Lab", "left", "mechanics"],
+        ["G-18", "Boys Toilet", "left"],
+        ["G-19", "Girls Toilet", "left"],
+        ["G-01", "Class Room", "top"],
+        ["G-02", "Class Room", "top"],
+        ["G-03", "Class Room", "top"],
+        ["G-04", "Class Room", "top"],
+        ["G-05", "Class Room", "top"],
+        ["G-06", "Class Room", "right"],
+        ["G-07", "Class Room", "right"],
+        ["G-08", "Class Room", "right"],
+        ["G-16", "Basic Civil Engg.", "bottom", "civil"],
+        ["G-15", "Material Testing Lab", "bottom"],
+        ["G-14", "Transportation Lab", "bottom"],
+        ["G-12/13", "Geo Technical Engg. Lab", "bottom", "geotechnical"],
+        ["G-11", "SOM Lab", "bottom", "strength of materials"],
+        ["G-10", "Boys Toilet", "se"],
+        ["G-09", "Girls Toilet", "se"],
+        ["G-20", "Library", "center", "books"]
+      ],
+      "F": [
+        ["F-19", "Staff Toilet (Female)", "left"],
+        ["F-18", "Staff Toilet (Male)", "left"],
+        ["F-17", "Faculty Room", "left", "faculty staff"],
+        ["F-16", "HOD Room", "left", "hod head of department"],
+        ["F-01", "Class Room", "top"],
+        ["F-02", "Class Room", "top"],
+        ["F-03", "Class Room", "top"],
+        ["F-04", "Class Room", "top"],
+        ["F-05", "Class Room", "top"],
+        ["F-06", "Class Room", "right"],
+        ["F-07", "Class Room", "right"],
+        ["F-08", "Class Room", "right"],
+        ["F-16(A)", "Conference Room", "bottom"],
+        ["F-15", "Software Lab-II", "bottom"],
+        ["F-14", "DSA Lab", "bottom", "data structures algorithms"],
+        ["F-13", "Software Lab-I", "bottom"],
+        ["F-12", "Store Room", "bottom"],
+        ["F-11", "Store Room", "bottom"],
+        ["F-10", "Boys Toilet", "se"],
+        ["F-09", "Girls Toilet", "se"],
+        ["F-20", "Library", "center", "books"]
+      ],
+      "S": [
+        ["S-20", "Staff Toilet (Female)", "left"],
+        ["S-19", "Staff Toilet (Male)", "left"],
+        ["S-18", "Faculty Room", "left", "faculty staff"],
+        ["S-17", "Principal Office", "left", "principal director"],
+        ["S-01", "Class Room", "top"],
+        ["S-02", "Class Room", "top"],
+        ["S-03", "Class Room", "top"],
+        ["S-04", "Class Room", "top"],
+        ["S-05", "Class Room", "top"],
+        ["S-06", "Class Room", "right"],
+        ["S-07", "Class Room", "right"],
+        ["S-08", "Class Room", "right"],
+        ["S-09", "Class Room", "right"],
+        ["S-17(A)", "Conference Room", "bottom"],
+        ["S-16", "Engg. Geology Lab", "bottom", "geology"],
+        ["S-15", "Environmental Engg. Lab", "bottom", "environmental"],
+        ["S-13/14", "Structural Engg. Lab", "bottom", "structural"],
+        ["S-12", "Class Room", "bottom"],
+        ["S-11", "Boys Toilet", "se"],
+        ["S-10", "Girls Toilet", "se"],
+        ["S-21", "Seminar Hall-01", "center", "seminar hall 1"]
+      ],
+      "T": [
+        ["T-27", "Girls Toilet", "left"],
+        ["T-26", "Boys Toilet", "left"],
+        ["T-25", "Department of Humanities", "left", "humanities"],
+        ["T-24", "Conference Room", "left"],
+        ["T-01", "Class Room", "top"],
+        ["T-02", "Class Room", "top"],
+        ["T-03", "Class Room", "top"],
+        ["T-04", "Class Room", "top"],
+        ["T-05", "Class Room", "top"],
+        ["T-06", "Class Room", "top"],
+        ["T-07", "Class Room", "top"],
+        ["T-08", "Class Room", "top"],
+        ["T-09", "Class Room", "top"],
+        ["T-10", "Class Room", "top"],
+        ["T-11", "Class Room", "right"],
+        ["T-12", "Class Room", "right"],
+        ["T-13", "Class Room", "right"],
+        ["T-14", "Department of Mathematics", "right", "maths math"],
+        ["T-15", "Class Room", "right"],
+        ["T-16", "Class Room", "right"],
+        ["T-23", "Girls Common Room", "bottom"],
+        ["T-22", "BME Lab", "bottom", "biomedical"],
+        ["T-21", "MMC Lab", "bottom"],
+        ["T-20", "DOM Lab", "bottom", "dynamics of machines"],
+        ["T-19", "TOM Lab", "bottom", "theory of machines"],
+        ["T-18", "Boys Toilet", "se"],
+        ["T-17", "Girls Toilet", "se"],
+        ["T-28", "Seminar Hall-02", "center", "seminar hall 2"]
+      ]
+    }
+  }
+}
